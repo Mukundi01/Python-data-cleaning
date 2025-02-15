@@ -1,0 +1,37 @@
+import pandas as pd
+
+# Load the data
+data = pd.read_csv('lego_sets.csv')
+
+# Display the first few rows to understand the structure
+print(data.head())
+
+# Check for missing values
+print(data.isnull().sum())
+
+# Handle missing values
+# For numerical columns, fill missing values with 0
+numerical_columns = ['pieces', 'minifigs', 'agerange_min', 'US_retailPrice']
+data[numerical_columns] = data[numerical_columns].fillna(0)
+
+# For categorical columns, fill missing values with 'Unknown'
+categorical_columns = ['subtheme', 'themeGroup', 'category']
+data[categorical_columns] = data[categorical_columns].fillna('Unknown')
+
+# Standardize the year column to ensure it's in integer format
+data['year'] = data['year'].astype(int)
+
+# Ensure all URLs are strings and handle any missing URLs
+url_columns = ['bricksetURL', 'thumbnailURL', 'imageURL']
+data[url_columns] = data[url_columns].fillna('No URL provided')
+
+# Check for duplicates based on 'set_id'
+print(f"Number of duplicates: {data.duplicated(subset=['set_id']).sum()}")
+
+# Remove duplicates based on 'set_id'
+data = data.drop_duplicates(subset=['set_id'])
+
+# Save the cleaned data to a new CSV file
+data.to_csv('cleaned_lego_sets.csv', index=False)
+
+print("Data cleaning complete. Cleaned data saved to 'cleaned_lego_sets.csv'.")
